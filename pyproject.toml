@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "queryops-rag"
+version = "0.1.0"
+description = "A schema-grounded hybrid RAG toolkit for NL2SQL and data operations"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+embeddings = ["sentence-transformers>=3.0"]
+sql = ["sqlglot>=25.0"]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["queryops*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

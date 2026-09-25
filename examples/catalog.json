@@ -1,0 +1,49 @@
+{
+  "objects": [
+    {
+      "name": "sales_fact",
+      "schema": "analytics",
+      "object_type": "table",
+      "description": "Sales transactions with revenue, quantity, and order dates.",
+      "grain": "one row per order line",
+      "logic_summary": "Revenue is quantity multiplied by net unit price after discounts.",
+      "tags": ["sales", "revenue", "fact"],
+      "columns": [
+        {"name": "order_id", "data_type": "varchar", "nullable": false},
+        {"name": "product_id", "data_type": "integer", "nullable": false},
+        {"name": "region_id", "data_type": "integer", "nullable": false},
+        {"name": "order_date", "data_type": "date", "nullable": false},
+        {"name": "quantity", "data_type": "integer", "nullable": false},
+        {"name": "net_revenue", "data_type": "decimal", "nullable": false, "description": "Revenue net of discounts"}
+      ]
+    },
+    {
+      "name": "region_dim",
+      "schema": "analytics",
+      "description": "Geographic sales region lookup.",
+      "grain": "one row per region",
+      "columns": [
+        {"name": "region_id", "data_type": "integer", "nullable": false},
+        {"name": "region_name", "data_type": "varchar", "nullable": false, "description": "Business display name"}
+      ]
+    },
+    {
+      "name": "product_dim",
+      "schema": "analytics",
+      "description": "Product catalog and category attributes.",
+      "grain": "one row per product",
+      "columns": [
+        {"name": "product_id", "data_type": "integer", "nullable": false},
+        {"name": "product_name", "data_type": "varchar", "nullable": false},
+        {"name": "category", "data_type": "varchar", "nullable": true}
+      ]
+    }
+  ],
+  "relationships": [
+    {"left_object": "sales_fact", "left_column": "region_id", "right_object": "region_dim", "right_column": "region_id", "confidence": 0.99, "evidence": "catalog key"},
+    {"left_object": "sales_fact", "left_column": "product_id", "right_object": "product_dim", "right_column": "product_id", "confidence": 0.99, "evidence": "catalog key"}
+  ],
+  "lineage": [
+    {"upstream": "sales_fact", "downstream": "monthly_sales", "summary": "Aggregates order lines by calendar month."}
+  ]
+}
